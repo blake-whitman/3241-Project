@@ -15,7 +15,6 @@ class Equipment {
     int size;
     
     public Equipment() {
-
     }
 }
 
@@ -28,7 +27,6 @@ class Warehouse {
     int droneCapacity;
 
     public Warehouse() {
-
     }
 }
 
@@ -43,7 +41,6 @@ class Member {
     int warehouseDistance;
 
     public Member() {
-
     }
 }
 
@@ -51,9 +48,9 @@ public class inventory {
 
     public static int displayOptions(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        System.out.println("1. Add new records (warehouse, member, or equipment)");
-        System.out.println("2. Edit/delete existing records (warehouse, member, or equipment)");
-        System.out.println("3. Search for records (warehouse, member, or equipment)");
+        System.out.println("1. Add new records");
+        System.out.println("2. Edit/delete existing records");
+        System.out.println("3. Search for records\n");
         System.out.print("Enter a number to select one of the three options or enter 'q' to exit: ");
         if (s.hasNextInt()) {
             int choice = s.nextInt();
@@ -65,6 +62,7 @@ public class inventory {
 
     public static Warehouse addWarehouse(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter information for the warehouse below.\n");
         Warehouse w = new Warehouse();
         System.out.print("Warehouse city: ");
         w.city = s.nextLine();
@@ -84,8 +82,12 @@ public class inventory {
     }
 
     public static int removeWarehouse(Scanner s) {
+        if (warehouses.isEmpty()) {
+            System.out.println("\nThere are currently no warehouses to edit or remove!");
+            return -1;
+        }
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        System.out.println("Here are the current warehouses in our system: ");
+        System.out.println("Here are the current warehouses in our system\n");
         int num = 1;
 
         for (Warehouse w : warehouses) {
@@ -94,7 +96,7 @@ public class inventory {
         }
 
         System.out.println("");
-        System.out.print("Enter the number of the warehouse that you wish to edit or remove, or enter 'q' to return home: ");
+        System.out.print("Enter the number of the warehouse that you wish to edit or remove: ");
         if (s.hasNextInt()) {
             int index = s.nextInt();
             s.nextLine();
@@ -105,9 +107,8 @@ public class inventory {
             }
             Warehouse edited = editWarehouse(warehouses.get(index - 1), s);
             warehouses.set(index - 1, edited);
-            return -1;
         }
-        return Integer.MIN_VALUE;
+        return -1;
     }
 
     public static Warehouse editWarehouse(Warehouse w, Scanner s) {
@@ -129,11 +130,36 @@ public class inventory {
         System.out.print("Warehouse drone capacity (currently '" + w.droneCapacity + "'): ");
         edited.droneCapacity = s.nextInt();
         s.nextLine();
+        if (w.address != edited.address) {
+            warehouseMap.put(edited.address, edited);
+        }
         return edited;
+    }
+
+    public static void searchWarehouse(Scanner s) {
+        if (warehouseMap.isEmpty()) {
+            System.out.println("\nThere are currently no warehouses eligible to be searched!");
+            return;
+        }
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter the address of the warehouse you are seeking below.\n");
+        System.out.print("Address: ");
+        String address = s.nextLine();
+
+        if (!warehouseMap.containsKey(address)) {
+            System.out.println("\n---------------------------------------------------------------------------------------\n");
+            System.out.println("The warehouse with address '" + address + "' is not currently in our system!");
+            return;
+        }
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        Warehouse w = warehouseMap.get(address);
+        System.out.println("Information for the searched warehouse is below.\n");
+        System.out.println(w.city + " | " + w.address + " | " + w.phone + " | " + w.managerName + " | " + w.storageCapacity + " | " + w.droneCapacity);
     }
 
     public static Member addMember(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter information for the member below.\n");
         Member m = new Member();
         System.out.print("Member id: ");
         m.id = s.nextInt();
@@ -157,8 +183,12 @@ public class inventory {
     }
 
     public static int removeMember(Scanner s) {
+        if (members.isEmpty()) {
+            System.out.println("\nThere are currently no members to edit or remove!");
+            return -1;
+        }
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        System.out.println("Here are the current members in our system: ");
+        System.out.println("Here are the current members in our system\n");
         int num = 1;
 
         for (Member m : members) {
@@ -167,7 +197,7 @@ public class inventory {
         }
 
         System.out.println("");
-        System.out.print("Enter the number of the member that you wish to edit or remove, or enter 'q' to return home: ");
+        System.out.print("Enter the number of the member that you wish to edit or remove: ");
         if (s.hasNextInt()) {
             int index = s.nextInt();
             s.nextLine();
@@ -178,9 +208,8 @@ public class inventory {
             }
             Member edited = editMember(members.get(index - 1), s);
             members.set(index - 1, edited);
-            return -1;
         }
-        return Integer.MIN_VALUE;
+        return -1;
     }
 
 
@@ -207,12 +236,37 @@ public class inventory {
         System.out.print("Member warehouse distance (currently '" + m.warehouseDistance + "''): ");
         edited.warehouseDistance = s.nextInt();
         s.nextLine();
+        if (m.id != edited.id) {
+            memberMap.put(edited.id, edited);
+        }
         return edited;
+    }
+
+    public static void searchMember(Scanner s) {
+        if (memberMap.isEmpty()) {
+            System.out.println("\nThere are currently no members eligible to be searched!");
+            return;
+        }
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter the user id of the member you are seeking below.\n");
+        System.out.print("User ID: ");
+        int id = s.nextInt();
+
+        if (!memberMap.containsKey(id)) {
+            System.out.println("\n---------------------------------------------------------------------------------------\n");
+            System.out.println("The member with user ID '" + id + "' is not currently in our system!");
+            return;
+        }
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        Member m = memberMap.get(id);
+        System.out.println("Information for the searched member is below.\n");
+        System.out.println(m.id + " | " + m.fName + " | " + m.lName + " | " + m.address + " | " + m.phone + " | " + m.email + " | " + m.startDate + " | " + m.warehouseDistance);
     }
 
 
     public static Equipment addEquipment(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter information for the equipment below.\n");
         Equipment e = new Equipment();
         System.out.print("Equipment type: ");
         e.type = s.nextLine();
@@ -246,8 +300,12 @@ public class inventory {
     }
 
     public static int removeEquipment(Scanner s) {
+        if (equip.isEmpty()) {
+            System.out.println("\nThere is currently no equipment to edit or remove!");
+            return -1;
+        }
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        System.out.println("Here is the current equipment in our system: ");
+        System.out.println("Here is the current equipment in our system\n");
         int num = 1;
 
         for (Equipment e : equip) {
@@ -256,7 +314,7 @@ public class inventory {
         }
 
         System.out.println("");
-        System.out.print("Enter the number of the equipment that you wish to edit or remove, or enter 'q' to return home: ");
+        System.out.print("Enter the number of the equipment that you wish to edit or remove: ");
         if (s.hasNextInt()) {
             int index = s.nextInt();
             s.nextLine();
@@ -267,9 +325,8 @@ public class inventory {
             }
             Equipment edited = editEquipment(equip.get(index - 1), s);
             equip.set(index - 1, edited);
-            return -1;
         }
-        return Integer.MIN_VALUE;
+        return -1;
     }
 
     public static Equipment editEquipment(Equipment e, Scanner s) {
@@ -305,17 +362,41 @@ public class inventory {
         System.out.print("Equipment size (currently '" + e.size + "''): ");
         edited.size = s.nextInt();
         s.nextLine();
+        if (e.inventoryId != edited.inventoryId) {
+            equipmentMap.put(edited.inventoryId, edited);
+        }
         return edited;
+    }
+
+    public static void searchEquipment(Scanner s) {
+        if (equipmentMap.isEmpty()) {
+            System.out.println("\nThere is currently no equipment eligible to be searched!");
+            return;
+        }
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter the inventory id of the equipment you are seeking below.\n");
+        System.out.print("Inventory ID: ");
+        int id = s.nextInt();
+
+        if (!equipmentMap.containsKey(id)) {
+            System.out.println("\n---------------------------------------------------------------------------------------\n");
+            System.out.println("The equipment with inventory ID '" + id + "' is not currently in our system!");
+            return;
+        }
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        Equipment e = equipmentMap.get(id);
+        System.out.println("Information for the searched equipment is below.\n");
+        System.out.println(e.type + " | " + e.description + " | " + e.modelNumber + " | " + e.year + " | " + e.serialNumber + " | " + e.inventoryId + " | " + e.arrivalDate + " | " + e.warrantyExpiration + " | " + e.manufacturer + " | " + e.weight + " | " + e.size);
     }
 
 
     public static void addRecord(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        System.out.println("Which type of record are you seeking to add to the system?: ");
+        System.out.println("Which type of record are you seeking to add to the system?\n");
         System.out.println("1. Warehouse");
         System.out.println("2. Member");
         System.out.println("3. Equipment");
-        System.out.println("4. Back to home screen");
+        System.out.println("4. Back to home screen\n");
         System.out.print("Enter choice here: ");
         if (s.hasNextInt()) {
             int choice = s.nextInt();
@@ -325,16 +406,19 @@ public class inventory {
                     Warehouse w = addWarehouse(s);
                     if (w != null) {
                         warehouses.add(w);
+                        warehouseMap.put(w.address, w);
                     }
                 } else if (choice == 2) {
                     Member m = addMember(s);
                     if (m != null) {
                         members.add(m);
+                        memberMap.put(m.id, m);
                     }
                 } else {
                     Equipment e = addEquipment(s);
                     if (e != null) {
                         equip.add(e);
+                        equipmentMap.put(e.inventoryId, e);
                     }
                 }
             }
@@ -343,11 +427,11 @@ public class inventory {
 
     public static void editRemoveRecord(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        System.out.println("Which type of record are you seeking to edit/remove from the system?: ");
+        System.out.println("Which type of record are you seeking to edit/remove from the system?\n");
         System.out.println("1. Warehouse");
         System.out.println("2. Member");
         System.out.println("3. Equipment");
-        System.out.println("4. Back to home screen");
+        System.out.println("4. Back to home screen\n");
         System.out.print("Enter choice here: ");
         if (s.hasNextInt()) {
             int choice = s.nextInt();
@@ -356,18 +440,47 @@ public class inventory {
                 if (choice == 1) {
                     int remIndex = removeWarehouse(s);
                     if (remIndex != -1) {
+                        Warehouse w = warehouses.get(remIndex);
                         warehouses.remove(remIndex);
+                        warehouseMap.remove(w.address);
                     }
                 } else if (choice == 2) {
                     int remIndex = removeMember(s);
                     if (remIndex != -1) {
+                        Member m = members.get(remIndex);
                         members.remove(remIndex);
+                        memberMap.remove(m.id);
                     }
                 } else {
                     int remIndex = removeEquipment(s);
                     if (remIndex != -1) {
+                        Equipment e = equip.get(remIndex);
                         equip.remove(remIndex);
+                        equipmentMap.remove(e.inventoryId);
                     }
+                }
+            }
+        }
+    }
+
+    public static void searchRecord(Scanner s) {
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Which type of record are you searching for in the system?\n");
+        System.out.println("1. Warehouse");
+        System.out.println("2. Member");
+        System.out.println("3. Equipment");
+        System.out.println("4. Back to home screen\n");
+        System.out.print("Enter choice here: ");
+        if (s.hasNextInt()) {
+            int choice = s.nextInt();
+            s.nextLine();
+            if (choice != 4) {
+                if (choice == 1) {
+                    searchWarehouse(s);
+                } else if (choice == 2) {
+                    searchMember(s);
+                } else {
+                    searchEquipment(s);
                 }
             }
         }
@@ -376,6 +489,10 @@ public class inventory {
     public static List<Warehouse> warehouses = new ArrayList<>();
     public static List<Member> members = new ArrayList<>();
     public static List<Equipment> equip = new ArrayList<>();
+    public static Map<String, Warehouse> warehouseMap = new HashMap<>();
+    public static Map<Integer, Member> memberMap = new HashMap<>();
+    public static Map<Integer, Equipment> equipmentMap = new HashMap<>();
+
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
         System.out.println("\n\nWelcome to our inventory management system. Enter a number below to add to, edit, delete, or search through our records.\n");
@@ -387,11 +504,9 @@ public class inventory {
             } else if (selection == 2) {
                 editRemoveRecord(s);
             } else {
-                // searchRecord();
+                searchRecord(s);
             }
             selection = displayOptions(s);
         }
-
-        System.out.println(warehouses);
     }
  }
