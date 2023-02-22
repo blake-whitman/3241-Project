@@ -1,48 +1,6 @@
 import java.util.Scanner;
 import java.util.*;
 
-class Equipment {
-    String type;
-    String description;
-    int modelNumber;
-    int year;
-    int serialNumber;
-    int inventoryId;
-    String arrivalDate;
-    String warrantyExpiration;
-    String manufacturer;
-    int weight;
-    int size;
-    
-    public Equipment() {
-    }
-}
-
-class Warehouse {
-    String city;
-    String address;
-    String phone;
-    String managerName;
-    int storageCapacity;
-    int droneCapacity;
-
-    public Warehouse() {
-    }
-}
-
-class Member {
-    int id;
-    String fName;
-    String lName;
-    String address;
-    String phone;
-    String email;
-    String startDate;
-    int warehouseDistance;
-
-    public Member() {
-    }
-}
 
 public class inventory {
 
