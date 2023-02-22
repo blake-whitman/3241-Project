@@ -1,5 +1,8 @@
-# 3241-Project
-a. Add new records (implement at least 3 of the main records, e.g. members, equipment, warehouse, ..)  
-b. Edit/delete records (e.g. members, equipment, warehouse, ..)  
-c. Search (e.g. members, equipment, warehouse, ..)  
-d. Useful reports (not to be implemented yet)
+# Checkpoint 2 Progress
+a. Add new records
+  - Inventory.java allows the user to add 3 of the main records: member, equipment, and warehouse
+b. Edit/delete records
+  - Inventory.java allows the user to edit or remove 3 of the main records: member, equipment, and warehouse
+c. Search
+  - Inventory.java allows the user to search for 3 of the main records by their primary key: member, equipment, and warehouse
+d. Useful reports (to be implemented in a future checkpoint)
