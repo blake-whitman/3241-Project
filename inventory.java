@@ -3,6 +3,48 @@ import java.util.*;
 
 
 public class inventory {
+    public static class warehouse {
+        String city;
+        String address;
+        String phone;
+        String managerName;
+        int storageCapacity;
+        int droneCapacity;
+    
+        public warehouse() {
+        }
+    }
+
+    public static class Member {
+        int id;
+        String fName;
+        String lName;
+        String address;
+        String phone;
+        String email;
+        String startDate;
+        int warehouseDistance;
+    
+        public Member() {
+        }
+    }
+
+    public static class Equipment {
+        String type;
+        String description;
+        int modelNumber;
+        int year;
+        int serialNumber;
+        int inventoryId;
+        String arrivalDate;
+        String warrantyExpiration;
+        String manufacturer;
+        int weight;
+        int size;
+        
+        public Equipment() {
+        }
+    }
 
     public static int displayOptions(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
@@ -18,10 +60,10 @@ public class inventory {
         return -1;
     }
 
-    public static Warehouse addWarehouse(Scanner s) {
+    public static warehouse addWarehouse(Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter information for the warehouse below.\n");
-        Warehouse w = new Warehouse();
+        warehouse w = new warehouse();
         System.out.print("Warehouse city: ");
         w.city = s.nextLine();
         System.out.print("Warehouse address: ");
@@ -48,7 +90,7 @@ public class inventory {
         System.out.println("Here are the current warehouses in our system\n");
         int num = 1;
 
-        for (Warehouse w : warehouses) {
+        for (warehouse w : warehouses) {
             System.out.println(num + ": " + w.city + " | " + w.address + " | " + w.phone + " | " + w.managerName + " | " + w.storageCapacity + " | " + w.droneCapacity);
             num++;
         }
@@ -63,17 +105,17 @@ public class inventory {
             if (in.equals("r")) {
                 return index - 1;
             }
-            Warehouse edited = editWarehouse(warehouses.get(index - 1), s);
+            warehouse edited = editWarehouse(warehouses.get(index - 1), s);
             warehouses.set(index - 1, edited);
         }
         return -1;
     }
 
-    public static Warehouse editWarehouse(Warehouse w, Scanner s) {
+    public static warehouse editWarehouse(warehouse w, Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter the edited version of this warehouse (current information in parantheses)");
 
-        Warehouse edited = new Warehouse();
+        warehouse edited = new warehouse();
         System.out.print("Warehouse city (currently '" + w.city + "'): ");
         edited.city = s.nextLine();
         System.out.print("Warehouse address (currently '" + w.address + "'): ");
@@ -110,7 +152,7 @@ public class inventory {
             return;
         }
         System.out.println("\n---------------------------------------------------------------------------------------\n");
-        Warehouse w = warehouseMap.get(address);
+        warehouse w = warehouseMap.get(address);
         System.out.println("Information for the searched warehouse is below.\n");
         System.out.println(w.city + " | " + w.address + " | " + w.phone + " | " + w.managerName + " | " + w.storageCapacity + " | " + w.droneCapacity);
     }
@@ -361,7 +403,7 @@ public class inventory {
             s.nextLine();
             if (choice != 4) {
                 if (choice == 1) {
-                    Warehouse w = addWarehouse(s);
+                    warehouse w = addWarehouse(s);
                     if (w != null) {
                         warehouses.add(w);
                         warehouseMap.put(w.address, w);
@@ -398,7 +440,7 @@ public class inventory {
                 if (choice == 1) {
                     int remIndex = removeWarehouse(s);
                     if (remIndex != -1) {
-                        Warehouse w = warehouses.get(remIndex);
+                        warehouse w = warehouses.get(remIndex);
                         warehouses.remove(remIndex);
                         warehouseMap.remove(w.address);
                     }
@@ -444,10 +486,10 @@ public class inventory {
         }
     }
 
-    public static List<Warehouse> warehouses = new ArrayList<>();
+    public static List<warehouse> warehouses = new ArrayList<>();
     public static List<Member> members = new ArrayList<>();
     public static List<Equipment> equip = new ArrayList<>();
-    public static Map<String, Warehouse> warehouseMap = new HashMap<>();
+    public static Map<String, warehouse> warehouseMap = new HashMap<>();
     public static Map<Integer, Member> memberMap = new HashMap<>();
     public static Map<Integer, Equipment> equipmentMap = new HashMap<>();
 
