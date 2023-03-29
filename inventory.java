@@ -175,25 +175,13 @@ public class inventory {
         return edited;
     }
 
-    public static void searchWarehouse(Scanner s) {
-        if (warehouseMap.isEmpty()) {
-            System.out.println("\nThere are currently no warehouses eligible to be searched!");
-            return;
-        }
+    public static void searchWarehouse(Scanner s, Connection conn) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter the address of the warehouse you are seeking below.\n");
         System.out.print("Address: ");
         String address = s.nextLine();
-
-        if (!warehouseMap.containsKey(address)) {
-            System.out.println("\n---------------------------------------------------------------------------------------\n");
-            System.out.println("The warehouse with address '" + address + "' is not currently in our system!");
-            return;
-        }
-        System.out.println("\n---------------------------------------------------------------------------------------\n");
-        warehouse w = warehouseMap.get(address);
-        System.out.println("Information for the searched warehouse is below.\n");
-        System.out.println(w.city + " | " + w.address + " | " + w.phone + " | " + w.managerName + " | " + w.storageCapacity + " | " + w.droneCapacity);
+        String sql = String.format("SELECT * FROM WAREHOUSE WHERE %s = '%s';", "address", address);
+        sqlQuery(conn, sql);
     }
 
     public static Member addMember(Scanner s) {
@@ -281,25 +269,13 @@ public class inventory {
         return edited;
     }
 
-    public static void searchMember(Scanner s) {
-        if (memberMap.isEmpty()) {
-            System.out.println("\nThere are currently no members eligible to be searched!");
-            return;
-        }
+    public static void searchMember(Scanner s, Connection conn) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter the user id of the member you are seeking below.\n");
         System.out.print("User ID: ");
-        int id = s.nextInt();
-
-        if (!memberMap.containsKey(id)) {
-            System.out.println("\n---------------------------------------------------------------------------------------\n");
-            System.out.println("The member with user ID '" + id + "' is not currently in our system!");
-            return;
-        }
-        System.out.println("\n---------------------------------------------------------------------------------------\n");
-        Member m = memberMap.get(id);
-        System.out.println("Information for the searched member is below.\n");
-        System.out.println(m.id + " | " + m.fName + " | " + m.lName + " | " + m.address + " | " + m.phone + " | " + m.email + " | " + m.startDate + " | " + m.warehouseDistance);
+        String id = s.nextLine();
+        String sql = String.format("SELECT * FROM MEMBER WHERE %s = '%s';", "user_id", id);
+        sqlQuery(conn, sql);
     }
 
 
@@ -407,25 +383,13 @@ public class inventory {
         return edited;
     }
 
-    public static void searchEquipment(Scanner s) {
-        if (equipmentMap.isEmpty()) {
-            System.out.println("\nThere is currently no equipment eligible to be searched!");
-            return;
-        }
+    public static void searchEquipment(Scanner s, Connection conn) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter the inventory id of the equipment you are seeking below.\n");
         System.out.print("Inventory ID: ");
-        int id = s.nextInt();
-
-        if (!equipmentMap.containsKey(id)) {
-            System.out.println("\n---------------------------------------------------------------------------------------\n");
-            System.out.println("The equipment with inventory ID '" + id + "' is not currently in our system!");
-            return;
-        }
-        System.out.println("\n---------------------------------------------------------------------------------------\n");
-        Equipment e = equipmentMap.get(id);
-        System.out.println("Information for the searched equipment is below.\n");
-        System.out.println(e.type + " | " + e.description + " | " + e.modelNumber + " | " + e.year + " | " + e.serialNumber + " | " + e.inventoryId + " | " + e.arrivalDate + " | " + e.warrantyExpiration + " | " + e.manufacturer + " | " + e.weight + " | " + e.size);
+        String id = s.nextLine();
+        String sql = String.format("SELECT * FROM EQUIPMENT WHERE %s = '%s';", "inventory_ID", id);
+        sqlQuery(conn, sql);
     }
 
 
@@ -502,7 +466,7 @@ public class inventory {
         }
     }
 
-    public static void searchRecord(Scanner s) {
+    public static void searchRecord(Scanner s, Connection conn) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Which type of record are you searching for in the system?\n");
         System.out.println("1. Warehouse");
@@ -515,11 +479,11 @@ public class inventory {
             s.nextLine();
             if (choice != 4) {
                 if (choice == 1) {
-                    searchWarehouse(s);
+                    searchWarehouse(s, conn);
                 } else if (choice == 2) {
-                    searchMember(s);
+                    searchMember(s, conn);
                 } else {
-                    searchEquipment(s);
+                    searchEquipment(s, conn);
                 }
             }
         }
@@ -559,7 +523,6 @@ public class inventory {
 
     public static void main(String[] args) {
         Connection conn = initializeDB(database);
-        sqlQuery(conn, "select * FROM drone");
         Scanner s = new Scanner(System.in);
         System.out.println("\n\nWelcome to our inventory management system. Enter a number below to add to, edit, delete, or search through our records.\n");
         int selection = displayOptions(s);
@@ -570,7 +533,7 @@ public class inventory {
             } else if (selection == 2) {
                 editRemoveRecord(s);
             } else {
-                searchRecord(s);
+                searchRecord(s, conn);
             }
             selection = displayOptions(s);
         }
