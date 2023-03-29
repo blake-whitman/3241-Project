@@ -1,8 +1,47 @@
 import java.util.Scanner;
 import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.DatabaseMetaData;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 
 public class inventory {
+
+    private static String database = "EquipmentRental.db";
+
+    public static Connection initializeDB(String databaseFileName) {
+        /**
+         * The "Connection String" or "Connection URL".
+         * 
+         * "jdbc:sqlite:" is the "subprotocol".
+         * (If this were a SQL Server database it would be "jdbc:sqlserver:".)
+         */
+           String url = "jdbc:sqlite:" + databaseFileName;
+           Connection conn = null; // If you create this variable inside the Try block it will be out of scope
+           try {
+               conn = DriverManager.getConnection(url);
+               if (conn != null) {
+                // Provides some positive assurance the connection and/or creation was successful.
+                   DatabaseMetaData meta = conn.getMetaData();
+                   System.out.println("The driver name is " + meta.getDriverName());
+                   System.out.println("The connection to the database was successful.");
+               } else {
+                // Provides some feedback in case the connection failed but did not throw an exception.
+                System.out.println("Null Connection");
+               }
+           } catch (SQLException e) {
+               System.out.println(e.getMessage());
+               System.out.println("There was a problem connecting to the database.");
+           }
+           return conn;
+    }
+
     public static class warehouse {
         String city;
         String address;
@@ -493,7 +532,34 @@ public class inventory {
     public static Map<Integer, Member> memberMap = new HashMap<>();
     public static Map<Integer, Equipment> equipmentMap = new HashMap<>();
 
+    public static void sqlQuery(Connection conn, String sql){
+        try {
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql);
+         ResultSetMetaData rsmd = rs.getMetaData();
+         int columnCount = rsmd.getColumnCount();
+         for (int i = 1; i <= columnCount; i++) {
+          String value = rsmd.getColumnName(i);
+          System.out.print(value);
+          if (i < columnCount) System.out.print(",  ");
+         }
+        System.out.print("\n");
+        while (rs.next()) {
+          for (int i = 1; i <= columnCount; i++) {
+           String columnValue = rs.getString(i);
+              System.out.print(columnValue);
+              if (i < columnCount) System.out.print(",  ");
+          }
+       System.out.print("\n");
+         }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
+        Connection conn = initializeDB(database);
+        sqlQuery(conn, "select * FROM drone");
         Scanner s = new Scanner(System.in);
         System.out.println("\n\nWelcome to our inventory management system. Enter a number below to add to, edit, delete, or search through our records.\n");
         int selection = displayOptions(s);
