@@ -8,12 +8,13 @@
 # Functionality
 
 a. Add new records
-  - Inventory.java allows the user to add 3 of the main records: member, equipment, and warehouse
+  - Allows the user to add 3 of the main records: member, equipment, and warehouse
   
 b. Edit/delete records
-  - Inventory.java allows the user to edit or remove 3 of the main records: member, equipment, and warehouse
+  - The user can edit or remove 3 of the main records: member, equipment, and warehouse
   
 c. Search
-  - Inventory.java allows the user to search for 3 of the main records by their primary key: member, equipment, and warehouse
+  - Inventory.java permits the user to search for 3 of the main records by their primary key: member, equipment, and warehouse
   
-d. Useful reports (to be implemented in a future checkpoint)
+d. Useful reports
+  - The program outputs useful reports in accordance with the instructions for Checkpoint #4
