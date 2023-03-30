@@ -1,8 +1,8 @@
-# Checkpoint 2 Progress
+# Checkpoint 4 Progress
 
 # How to Run
-1. Run inventory.java
-2. Interact with the text interface by entering digits. It is recommended that you add one or more records before checking out the edit/remove/search features, but it is not mandatory to do so.
+1. Run java -classpath [your path here]:. inventory.java
+2. Interact with the text interface by entering digits.
 3. When you are done running the program, press 'q' to quit.
 
 # Functionality
