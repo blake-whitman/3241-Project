@@ -1,4 +1,7 @@
 import java.util.Scanner;
+
+import javax.lang.model.util.ElementScanner6;
+
 import java.util.*;
 import java.sql.PreparedStatement;
 import java.sql.DriverManager;
@@ -151,8 +154,9 @@ public class inventory {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("1. Add new records");
         System.out.println("2. Edit/delete existing records");
-        System.out.println("3. Search for records\n");
-        System.out.print("Enter a number to select one of the three options or enter 'q' to exit: ");
+        System.out.println("3. Search for records");
+        System.out.println("4. Useful Queries\n");
+        System.out.print("Enter a number to select one of the four options or enter 'q' to exit: ");
         if (s.hasNextInt()) {
             int choice = s.nextInt();
             s.nextLine();
@@ -753,7 +757,7 @@ public static void addMember(Connection conn, Scanner s) {
     }
 
     //Useful Reports
-        public static void getTotalEquipmentRentedByMember(Connection conn)
+        public static void getTotalEquipmentRentedByMember(Scanner s, Connection conn)
         {
         	String prep = "SELECT user_id, count(*)\n"
         			+ "FROM RENTS\n"
@@ -764,9 +768,7 @@ public static void addMember(Connection conn, Scanner s) {
         		stmt = conn.prepareStatement(prep);
             	System.out.print("Enter user_id of member's equipment count to get: ");
             	//user_3901A2B8
-            	Scanner in = new Scanner(System.in);
-            	String user = in.nextLine();
-            	in.close();
+            	String user = s.nextLine();
             	stmt.setString(1, user);
             	preparedSqlQuery(conn, stmt);
         	}
@@ -808,11 +810,23 @@ public static void addMember(Connection conn, Scanner s) {
         	sqlQuery(conn, prep);
         }
         
-        public static void getEquipmentByTypeAndReleaseYear(Connection conn)
+        public static void getEquipmentByTypeAndReleaseYear(Scanner s, Connection conn)
         {
         	String prep = "SELECT description\n"
         			+ "FROM EQUIPMENT\n"
-        			+ "WHERE year < 2022";
+        			+ "WHERE year < ?";
+            System.out.print("Select a year that equipment should have been released before: ");
+            int year = s.nextInt();
+            PreparedStatement stmt = null;
+            try{
+                stmt = conn.prepareStatement(prep);
+                stmt.setInt(1, year);
+                preparedSqlQuery(conn, stmt);
+            }
+            catch(SQLException e)
+            {
+                System.out.println(e.getMessage());
+            }
         	sqlQuery(conn, prep);
         }
         
@@ -836,6 +850,44 @@ public static void addMember(Connection conn, Scanner s) {
             //getEquipmentByTypeAndReleaseYear(conn);
             //getPopularItem(conn);
         }
+
+        public static void usefulQueries(Scanner s, Connection conn)
+        {
+            System.out.println("Select the query you wish to perform"
+            +"\n1. Find number of equipment items rented by a user-defined patron"
+            +"\n2. Find the most popular item based on renting time and number of times rented"
+            +"\n3. Find the manufacturer that is most frequently rented"
+            +"\n4. Find the most used drone based on number of deliveries"
+            +"\n5. Find the member who has rented the most items and how many items they have rented"
+            +"\n6. Find the description of equipment by type released before a user-defined year");
+            int input = -1;
+            while(input == -1)
+            {
+                System.out.print("Please select one of the above options: ");
+                input = s.nextInt();
+            }
+            switch(input)
+            {
+                case 1:
+                    getTotalEquipmentRentedByMember(s, conn);
+                    break;
+                case 2:
+                    getPopularItem(conn);
+                    break;
+                case 3:
+                    getPopularManufacturer(conn);
+                    break;
+                case 4:
+                    getPopularDrone(conn);
+                    break;
+                case 5:
+                    getMemberWithMostItems(conn);
+                    break;
+                default:
+                    getEquipmentByTypeAndReleaseYear(s, conn);
+                    break;
+            }
+        }
         //End Useful Reports
 
     public static void main(String[] args) {
@@ -849,8 +901,12 @@ public static void addMember(Connection conn, Scanner s) {
                 addRecord(conn, s);
             } else if (selection == 2) {
                 editRemoveRecord(s);
-            } else {
+            } else if (selection == 3) {
                 searchRecord(s, conn);
+            }
+            else
+            {
+                usefulQueries(s, conn);
             }
             selection = displayOptions(s);
         }
