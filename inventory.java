@@ -42,7 +42,7 @@ public class inventory {
            return conn;
     }
 
-    public static class warehouse {
+    public static class Warehouse {
         String city;
         String address;
         String phone;
@@ -50,7 +50,7 @@ public class inventory {
         int storageCapacity;
         int droneCapacity;
     
-        public warehouse() {
+        public Warehouse() {
         }
     }
 
@@ -69,19 +69,81 @@ public class inventory {
     }
 
     public static class Equipment {
+        String inventoryID;
         String type;
         String description;
         int modelNumber;
         int year;
-        int serialNumber;
-        int inventoryId;
+        String serialNumber;
+        String userID;
         String arrivalDate;
         String warrantyExpiration;
         String manufacturer;
         int weight;
         int size;
-        
+        String address;
+        int numberUnits;
+        String releaseDate;
+
         public Equipment() {
+        }
+    }
+    
+    public static class Drone {
+        String name;
+        int mnumber;
+        int vCapacity;
+        int distance;
+        String expDate;
+        int fleetID;
+        String serial;
+        String manufacturer;
+        String year;
+        int wCapacity;
+        int speed;
+        int status;
+        String address;
+        
+        public Drone() {
+        }
+    }
+    
+    public static class Rating{
+    
+        String userID;
+        String inventoryID;
+        int rating;
+        String comments;
+        String date;
+    
+        public Rating() {
+        }
+   }
+    
+    public static class Rents{
+    
+        String userID;
+        String inventoryID;
+        String startDate;
+        String endDate;
+    
+        public Rents() {
+        }
+    }
+    
+    public static class WarehouseOrder{
+    
+        String orderID;
+        String elementType;
+        int numberOrdered;
+        int value;
+        String date;
+        int times;
+        int frequency;
+        String description;
+        String address; 
+    
+        public WarehouseOrder() {
         }
     }
 
@@ -99,10 +161,10 @@ public class inventory {
         return -1;
     }
 
-    public static warehouse addWarehouse(Scanner s) {
+    public static void addWarehouse(Connection conn, Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter information for the warehouse below.\n");
-        warehouse w = new warehouse();
+        Warehouse w = new Warehouse();
         System.out.print("Warehouse city: ");
         w.city = s.nextLine();
         System.out.print("Warehouse address: ");
@@ -117,7 +179,9 @@ public class inventory {
         System.out.print("Warehouse drone capacity: ");
         w.droneCapacity = s.nextInt();
         s.nextLine();
-        return w;
+        
+        sqlQuery(conn, "INSERT INTO WAREHOUSE VALUES ('" + w.address + "', '" + w.city + "', '" + w.phone + 
+        "', '" + w.managerName + "', " + w.storageCapacity + ", " + w.droneCapacity + ");");
     }
 
     public static int removeWarehouse(Scanner s) {
@@ -184,13 +248,12 @@ public class inventory {
         sqlQuery(conn, sql);
     }
 
-    public static Member addMember(Scanner s) {
+public static void addMember(Connection conn, Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter information for the member below.\n");
         Member m = new Member();
         System.out.print("Member id: ");
-        m.id = s.nextInt();
-        s.nextLine();
+        m.id = s.nextLine();
         System.out.print("Member first name: ");
         m.fName = s.nextLine();
         System.out.print("Member last name: ");
@@ -206,7 +269,16 @@ public class inventory {
         System.out.print("Member warehouse distance: ");
         m.warehouseDistance = s.nextInt();
         s.nextLine();
-        return m;
+        System.out.print("Member warehouse address: ");
+        m.address = s.nextLine();
+        
+        sqlQuery(conn,
+                "INSERT INTO MEMBER VALUES ('" + m.id + "', '" + m.phone
+                        + "', '" + m.email + "', '" + m.startDate + "', "
+                        + m.warehouseDistance + ", '" + m.address + "');");
+        sqlQuery(conn, "INSERT INTO MEMBER_NAME VALUES ('" + m.phone + "', '"
+                + m.email + "', '" + m.fName + "', '" + m.lName + "');");
+        
     }
 
     public static int removeMember(Scanner s) {
@@ -279,39 +351,54 @@ public class inventory {
     }
 
 
-    public static Equipment addEquipment(Scanner s) {
-        System.out.println("\n---------------------------------------------------------------------------------------\n");
+   public static void addEquipment(Connection conn, Scanner s) {
+        System.out.println(
+                "\n---------------------------------------------------------------------------------------\n");
         System.out.println("Enter information for the equipment below.\n");
         Equipment e = new Equipment();
-        System.out.print("Equipment type: ");
-        e.type = s.nextLine();
+        System.out.print("Equipment inventory id: ");
+        e.inventoryID = s.nextLine();
         System.out.print("Equipment description: ");
         e.description = s.nextLine();
-        System.out.print("Equipment model number: ");
-        e.modelNumber = s.nextInt();
-        s.nextLine();
         System.out.print("Equipment year: ");
         e.year = s.nextInt();
         s.nextLine();
-        System.out.print("Equipment serial number: ");
-        e.serialNumber = s.nextInt();
-        s.nextLine();
-        System.out.print("Equipment inventory id: ");
-        e.inventoryId = s.nextInt();
-        s.nextLine();
+        System.out.print("Equipment type: ");
+        e.type = s.nextLine();
         System.out.print("Equipment arrival date: ");
         e.arrivalDate = s.nextLine();
         System.out.print("Equipment warranty expiration: ");
         e.warrantyExpiration = s.nextLine();
         System.out.print("Equipment manufacturer: ");
         e.manufacturer = s.nextLine();
-        System.out.print("Equipment weight: ");
+        System.out.print("Equipment model number: ");
+        e.modelNumber = s.nextInt();
+        s.nextLine();
+        System.out.print("Equipment serial number: ");
+        e.serialNumber = s.nextLine();
+        System.out.print("User ID: ");
+        e.userID = s.nextLine();
+        System.out.print("Warehouse Address: ");
+        e.address = s.nextLine();
+        System.out.print("Number of Units: ");
+        e.numberUnits = s.nextInt();
+        s.nextLine();
+        System.out.print("Release Date: ");
+        e.releaseDate = s.nextLine();
+        System.out.print("Weight: ");
         e.weight = s.nextInt();
         s.nextLine();
-        System.out.print("Equipment size: ");
+        System.out.print("Size: ");
         e.size = s.nextInt();
         s.nextLine();
-        return e;
+        sqlQuery(conn, "INSERT INTO EQUIPMENT VALUES ('" + e.inventoryID
+                + "', '" + e.description + "', '" + e.year + "', '" + e.type
+                + "', '" + e.arrivalDate + "', '" + e.warrantyExpiration
+                + "', '" + e.manufacturer + "', " + e.modelNumber + ", '"
+                + e.serialNumber + "', '" + e.userID + "', '" + e.address
+                + "', " + e.numberUnits + ", '" + e.releaseDate + "');");
+        sqlQuery(conn, "INSERT INTO MODEL_INFO VALUES (" + e.modelNumber + ", "
+                + e.weight + ", " + e.size + ");");
     }
 
     public static int removeEquipment(Scanner s) {
@@ -391,38 +478,157 @@ public class inventory {
         String sql = String.format("SELECT * FROM EQUIPMENT WHERE %s = '%s';", "inventory_ID", id);
         sqlQuery(conn, sql);
     }
+    
+    public static void addDrone(Connection conn, Scanner s) {
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter information for the drone below.\n");
+        Drone d = new Drone();
+        System.out.print("Drone name: ");
+        d.name = s.nextLine();
+        System.out.print("Drone Model number: ");
+        d.mnumber = s.nextInt();
+        s.nextLine();
+        System.out.print("Drone volume capacity: ");
+        d.vCapacity = s.nextInt();
+        s.nextLine();
+        System.out.print("Drone distance autonomy: ");
+        d.distance = s.nextInt();
+        s.nextLine;
+        System.out.print("Drone Warranty Expiration Date: ");
+        d.expDate = s.nextLine();
+        System.out.print("Drone Fleet ID: ");
+        d.fleetID = s.nextInt();
+        s.nextLine();
+        System.out.print("Drone Serial Number: ");
+        d.serial = s.nextLine();
+        System.out.print("Drone manufacturer: ");
+        d.manufacturer = s.nextLine();
+        System.out.print("Drone Year: ");
+        d.year = s.nextLine();
+        System.out.print("Drone weight capacity: ");
+        d.wCapacity = s.nextInt();
+        s.nextLine();
+        System.out.print("Drone max speed: ");
+        d.speed = s.nextInt();
+        s.nextLine();
+        System.out.print("Drone status: ");
+        d.status = s.nextInt();
+        s.nextLine();
+        System.out.print("Drone warehouse address: ");
+        d.address = s.nextLine();
+        
+        sqlQuery(conn, "INSERT INTO DRONE VALUES ('" + d.name + "', "
+                + d.mnumber + ", " + d.vCapacity + ", " + d.distance + ", '"
+                + d.expDate + "', " + d.fleetID + ", '" + d.serial + "', '"
+                + d.manufacturer + "', '" + d.year + "', " + d.wCapacity + ", "
+                + d.speed + ", " + d.status + ", '" + d.address + "')");
+    }
+    
+    public static void addRating(Connection conn, Scanner s){
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter Rating information below.\n");
+        Rating r = new Rating();
+        System.out.print("Member id: ");
+        r.userID = s.nextLine();
+        System.out.print("Inventory id: ");
+        r.inventoryID = s.nextLine();
+        System.out.print("Rating: ");
+        r.rating = s.nextInt();
+        s.nextLine();
+        System.out.print("Enter Comments: ");
+        r.comments = s.nextLine();
+        System.out.print("Rating Dating: ");
+        r.date = s.nextLine();
+        
+        sqlQuery(conn, "INSERT INTO RATINGS VALUES ('" + r.userID + "', '" + r.inventoryID + "', " +
+        r.rating + ", '" + r.comments + "', '" + r.date +"');");
+        
+    }
+    
+    public static void addRents(Connection conn, Scanner s){
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter Renting information below.\n");
+        Rents p = new Rents();
+        System.out.print("Member id: ");
+        p.userID = s.nextLine();
+        System.out.print("Inventory id: ");
+        p.inventoryID = s.nextLine();
+        System.out.print("Start Date: ");
+        p.startDate = s.nextLine();
+        System.out.print("End Date: ");
+        p.endDate = s.nextLine();
+        
+        sqlQuery(conn,
+                "INSERT INTO RENTS VALUES ('" + p.userID + "', '"
+                        + p.inventoryID + "', '" + p.startDate + "', '"
+                        + p.endDate + "');");   
+    }
+    
+    public static void addWarehouseOrder(Connection conn, Scanner s) {
+        System.out.println("\n---------------------------------------------------------------------------------------\n");
+        System.out.println("Enter information for the warehouse below.\n");
+        WarehouseOrder o = new WarehouseOrder();
+        System.out.print("OrderID: ");
+        o.orderID = s.nextLine();
+        System.out.print("Warehouse Ordered to: ");
+        o.address = s.nextLine();
+        System.out.print("Element Type: ");
+        o.elementType = s.nextLine();
+        System.out.print("Number ordered: ");
+        o.numberOrdered = s.nextInt();
+        s.nextLine();
+        System.out.print("Value: ");
+        o.value = s.nextInt();
+        s.nextLine();
+        System.out.print("Date Arrival: ");
+        o.date = s.nextLine();
+        System.out.print("Times Ordered: ");
+        o.times = s.nextInt();
+        s.nextLine();
+        System.out.print("Frequency Ordered: ");
+        o.frequency = s.nextInt();
+        s.nextLine();
+        System.out.print("Description: ");
+        o.description = s.nextLine();
+        
+        sqlQuery(conn, "INSERT INTO WAREHOUSE_ORDER VALUES ('" + o.orderID + "', '" + o.elementType + "', " + 
+        o.numberOrdered + ", " + o.value + ", '" + o.date + "', " + o.times + ", " + o.frequency + 
+        ", '" + o.description + "');" );
+        sqlQuery(conn, "INSERT INTO SHIPPED VALUES ('" + o.orderID + "', '" + o.address + "');");   
+        
+    }
 
 
-    public static void addRecord(Scanner s) {
+    public static void addRecord(Connection conn, Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Which type of record are you seeking to add to the system?\n");
         System.out.println("1. Warehouse");
         System.out.println("2. Member");
         System.out.println("3. Equipment");
-        System.out.println("4. Back to home screen\n");
+        System.out.println("4. Drone");
+        System.out.println("5. Rating");
+        System.out.println("6. Rents"); 
+        System.out.println("7. Warehouse Order");
+        System.out.println("8. Back to home screen\n");
         System.out.print("Enter choice here: ");
         if (s.hasNextInt()) {
             int choice = s.nextInt();
             s.nextLine();
-            if (choice != 4) {
+            if (choice != 8) {
                 if (choice == 1) {
-                    warehouse w = addWarehouse(s);
-                    if (w != null) {
-                        warehouses.add(w);
-                        warehouseMap.put(w.address, w);
-                    }
+                    addWarehouse(conn, s);
                 } else if (choice == 2) {
-                    Member m = addMember(s);
-                    if (m != null) {
-                        members.add(m);
-                        memberMap.put(m.id, m);
-                    }
-                } else {
-                    Equipment e = addEquipment(s);
-                    if (e != null) {
-                        equip.add(e);
-                        equipmentMap.put(e.inventoryId, e);
-                    }
+                    addMember(conn, s);
+                } else if (choice == 3) {
+                    addEquipment(conn, s);
+                } else if (choice == 4) {
+                    addDrone(conn, s);
+                } else if (choice == 5) {
+                    addRating(conn, s);
+                } else if (choice == 6) {
+                    addRents(conn, s);
+                } else if (choice == 7) {
+                    addWarehouseOrder(conn, s);
                 }
             }
         }
@@ -529,7 +735,7 @@ public class inventory {
 
         while (selection != -1) {
             if (selection == 1) {
-                addRecord(s);
+                addRecord(conn, s);
             } else if (selection == 2) {
                 editRemoveRecord(s);
             } else {
