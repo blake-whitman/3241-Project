@@ -727,6 +727,117 @@ public static void addMember(Connection conn, Scanner s) {
         }
     }
 
+    public static void preparedSqlQuery(Connection conn, PreparedStatement stmt)
+    {
+        try {
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+             String value = rsmd.getColumnName(i);
+             System.out.print(value);
+             if (i < columnCount) System.out.print(",  ");
+            }
+           System.out.print("\n");
+           while (rs.next()) {
+             for (int i = 1; i <= columnCount; i++) {
+              String columnValue = rs.getString(i);
+                 System.out.print(columnValue);
+                 if (i < columnCount) System.out.print(",  ");
+             }
+          System.out.print("\n");
+            }
+           } catch (SQLException e) {
+               System.out.println(e.getMessage());
+           }
+    }
+
+    //Useful Reports
+        public static void getTotalEquipmentRentedByMember(Connection conn)
+        {
+        	String prep = "SELECT user_id, count(*)\n"
+        			+ "FROM RENTS\n"
+        			+ "GROUP BY user_id\n"
+        			+ "HAVING user_id=?;";
+        	PreparedStatement stmt = null;
+        	try {
+        		stmt = conn.prepareStatement(prep);
+            	System.out.print("Enter user_id of member's equipment count to get: ");
+            	//user_3901A2B8
+            	Scanner in = new Scanner(System.in);
+            	String user = in.nextLine();
+            	in.close();
+            	stmt.setString(1, user);
+            	preparedSqlQuery(conn, stmt);
+        	}
+        	catch(SQLException e)
+        	{
+        		System.out.println(e.getMessage());
+        	}
+        }
+        
+        public static void getPopularItem(Connection conn)
+        {
+        	String prep = "SELECT description, e.inventory_ID, count(*) as rented_count, (julianday(return_date)-julianday(start_date)) as rented_duration\n"
+        			+ "FROM EQUIPMENT as e, RENTS as r\n"
+        			+ "WHERE r.inventory_id=e.inventory_ID\n"
+        			+ "GROUP BY e.inventory_id\n"
+        			+ "ORDER BY rented_count, rented_duration DESC\n"
+        			+ "LIMIT 1;";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getPopularDrone(Connection conn)
+        {
+        	String prep = "SELECT d.name, d.serial_number, COUNT(*) AS items_delivered\n"
+        			+ "FROM DRONE d\n"
+        			+ "JOIN EQUIPMENT e ON d.serial_number = e.drone_serial_number\n"
+        			+ "GROUP BY d.name, d.serial_number\n"
+        			+ "ORDER BY items_delivered DESC\n"
+        			+ "LIMIT 1;";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getMemberWithMostItems(Connection conn)
+        {
+        	String prep = "SELECT user_id, count(*) as items_rented\n"
+        			+ "FROM RENTS\n"
+        			+ "GROUP BY user_id\n"
+        			+ "ORDER BY items_rented desc\n"
+        			+ "LIMIT 1;";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getEquipmentByTypeAndReleaseYear(Connection conn)
+        {
+        	String prep = "SELECT description\n"
+        			+ "FROM EQUIPMENT\n"
+        			+ "WHERE year < 2022";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getPopularManufacturer(Connection conn)
+        {
+        		String prep = "SELECT e.manufacturer, COUNT(*) AS total_rented_items\n"
+        				+ "FROM EQUIPMENT e\n"
+        				+ "JOIN RENTS r ON e.inventory_ID = r.inventory_ID\n"
+        				+ "GROUP BY e.manufacturer\n"
+        				+ "ORDER BY total_rented_items DESC\n"
+        				+ "LIMIT 1;";
+            	sqlQuery(conn, prep);
+        }
+        
+        public static void testUsefulReports(Connection conn)
+        {
+        	//getTotalEquipmentRentedByMember(conn);
+            //getPopularManufacturer(conn);
+            //getPopularDrone(conn);
+            //getMemberWithMostItems(conn);
+            //getEquipmentByTypeAndReleaseYear(conn);
+            //getPopularItem(conn);
+        }
+        //End Useful Reports
+
     public static void main(String[] args) {
         Connection conn = initializeDB(database);
         Scanner s = new Scanner(System.in);
