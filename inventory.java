@@ -964,7 +964,7 @@ public static void addMember(Connection conn, Scanner s) {
     }
 
     //Useful Reports
-        public static void getTotalEquipmentRentedByMember(Scanner s, Connection conn)
+        public static void getTotalEquipmentRentedByMember(Connection conn)
         {
         	String prep = "SELECT user_id, count(*)\n"
         			+ "FROM RENTS\n"
@@ -975,7 +975,9 @@ public static void addMember(Connection conn, Scanner s) {
         		stmt = conn.prepareStatement(prep);
             	System.out.print("Enter user_id of member's equipment count to get: ");
             	//user_3901A2B8
-            	String user = s.nextLine();
+            	Scanner userName = new Scanner(System.in);
+            	String user = userName.nextLine();
+            	userName.close();
             	stmt.setString(1, user);
             	preparedSqlQuery(conn, stmt);
         	}
@@ -1050,23 +1052,25 @@ public static void addMember(Connection conn, Scanner s) {
 
         public static void usefulQueries(Scanner s, Connection conn)
         {
-            System.out.println("Select the query you wish to perform"
+            System.out.println("\nSelect the query you wish to perform"
             +"\n1. Find number of equipment items rented by a user-defined patron"
             +"\n2. Find the most popular item based on renting time and number of times rented"
             +"\n3. Find the manufacturer that is most frequently rented"
             +"\n4. Find the most used drone based on number of deliveries"
             +"\n5. Find the member who has rented the most items and how many items they have rented"
-            +"\n6. Find the description of equipment by type released before a user-defined year");
+            +"\n6. Find the description of equipment by type released before a user-defined year"
+            +"\n7. Return to main menu\n");
             int input = -1;
             while(input == -1)
             {
                 System.out.print("Please select one of the above options: ");
-                input = s.nextInt();
+                if(s.hasNextInt()) input = s.nextInt();
+                s.nextLine();
             }
             switch(input)
             {
                 case 1:
-                    getTotalEquipmentRentedByMember(s, conn);
+                    getTotalEquipmentRentedByMember(conn);
                     break;
                 case 2:
                     getPopularItem(conn);
@@ -1080,9 +1084,11 @@ public static void addMember(Connection conn, Scanner s) {
                 case 5:
                     getMemberWithMostItems(conn);
                     break;
-                default:
+                case 6:
                     getEquipmentByTypeAndReleaseYear(s, conn);
                     break;
+                default:
+                	break;
             }
         }
         //End Useful Reports
