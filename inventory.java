@@ -1,4 +1,7 @@
 import java.util.Scanner;
+
+import javax.lang.model.util.ElementScanner6;
+
 import java.util.*;
 import java.sql.PreparedStatement;
 import java.sql.DriverManager;
@@ -151,8 +154,9 @@ public class inventory {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("1. Add new records");
         System.out.println("2. Edit/delete existing records");
-        System.out.println("3. Search for records\n");
-        System.out.print("Enter a number to select one of the three options or enter 'q' to exit: ");
+        System.out.println("3. Search for records");
+        System.out.println("4. Useful Queries\n");
+        System.out.print("Enter a number to select one of the four options or enter 'q' to exit: ");
         if (s.hasNextInt()) {
             int choice = s.nextInt();
             s.nextLine();
@@ -727,6 +731,165 @@ public static void addMember(Connection conn, Scanner s) {
         }
     }
 
+    public static void preparedSqlQuery(Connection conn, PreparedStatement stmt)
+    {
+        try {
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+             String value = rsmd.getColumnName(i);
+             System.out.print(value);
+             if (i < columnCount) System.out.print(",  ");
+            }
+           System.out.print("\n");
+           while (rs.next()) {
+             for (int i = 1; i <= columnCount; i++) {
+              String columnValue = rs.getString(i);
+                 System.out.print(columnValue);
+                 if (i < columnCount) System.out.print(",  ");
+             }
+          System.out.print("\n");
+            }
+           } catch (SQLException e) {
+               System.out.println(e.getMessage());
+           }
+    }
+
+    //Useful Reports
+        public static void getTotalEquipmentRentedByMember(Scanner s, Connection conn)
+        {
+        	String prep = "SELECT user_id, count(*)\n"
+        			+ "FROM RENTS\n"
+        			+ "GROUP BY user_id\n"
+        			+ "HAVING user_id=?;";
+        	PreparedStatement stmt = null;
+        	try {
+        		stmt = conn.prepareStatement(prep);
+            	System.out.print("Enter user_id of member's equipment count to get: ");
+            	//user_3901A2B8
+            	String user = s.nextLine();
+            	stmt.setString(1, user);
+            	preparedSqlQuery(conn, stmt);
+        	}
+        	catch(SQLException e)
+        	{
+        		System.out.println(e.getMessage());
+        	}
+        }
+        
+        public static void getPopularItem(Connection conn)
+        {
+        	String prep = "SELECT description, e.inventory_ID, count(*) as rented_count, (julianday(return_date)-julianday(start_date)) as rented_duration\n"
+        			+ "FROM EQUIPMENT as e, RENTS as r\n"
+        			+ "WHERE r.inventory_id=e.inventory_ID\n"
+        			+ "GROUP BY e.inventory_id\n"
+        			+ "ORDER BY rented_count, rented_duration DESC\n"
+        			+ "LIMIT 1;";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getPopularDrone(Connection conn)
+        {
+        	String prep = "SELECT d.name, d.serial_number, COUNT(*) AS items_delivered\n"
+        			+ "FROM DRONE d\n"
+        			+ "JOIN EQUIPMENT e ON d.serial_number = e.drone_serial_number\n"
+        			+ "GROUP BY d.name, d.serial_number\n"
+        			+ "ORDER BY items_delivered DESC\n"
+        			+ "LIMIT 1;";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getMemberWithMostItems(Connection conn)
+        {
+        	String prep = "SELECT user_id, count(*) as items_rented\n"
+        			+ "FROM RENTS\n"
+        			+ "GROUP BY user_id\n"
+        			+ "ORDER BY items_rented desc\n"
+        			+ "LIMIT 1;";
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getEquipmentByTypeAndReleaseYear(Scanner s, Connection conn)
+        {
+        	String prep = "SELECT description\n"
+        			+ "FROM EQUIPMENT\n"
+        			+ "WHERE year < ?";
+            System.out.print("Select a year that equipment should have been released before: ");
+            int year = s.nextInt();
+            PreparedStatement stmt = null;
+            try{
+                stmt = conn.prepareStatement(prep);
+                stmt.setInt(1, year);
+                preparedSqlQuery(conn, stmt);
+            }
+            catch(SQLException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        	sqlQuery(conn, prep);
+        }
+        
+        public static void getPopularManufacturer(Connection conn)
+        {
+        		String prep = "SELECT e.manufacturer, COUNT(*) AS total_rented_items\n"
+        				+ "FROM EQUIPMENT e\n"
+        				+ "JOIN RENTS r ON e.inventory_ID = r.inventory_ID\n"
+        				+ "GROUP BY e.manufacturer\n"
+        				+ "ORDER BY total_rented_items DESC\n"
+        				+ "LIMIT 1;";
+            	sqlQuery(conn, prep);
+        }
+        
+        public static void testUsefulReports(Connection conn)
+        {
+        	//getTotalEquipmentRentedByMember(conn);
+            //getPopularManufacturer(conn);
+            //getPopularDrone(conn);
+            //getMemberWithMostItems(conn);
+            //getEquipmentByTypeAndReleaseYear(conn);
+            //getPopularItem(conn);
+        }
+
+        public static void usefulQueries(Scanner s, Connection conn)
+        {
+            System.out.println("Select the query you wish to perform"
+            +"\n1. Find number of equipment items rented by a user-defined patron"
+            +"\n2. Find the most popular item based on renting time and number of times rented"
+            +"\n3. Find the manufacturer that is most frequently rented"
+            +"\n4. Find the most used drone based on number of deliveries"
+            +"\n5. Find the member who has rented the most items and how many items they have rented"
+            +"\n6. Find the description of equipment by type released before a user-defined year");
+            int input = -1;
+            while(input == -1)
+            {
+                System.out.print("Please select one of the above options: ");
+                input = s.nextInt();
+            }
+            switch(input)
+            {
+                case 1:
+                    getTotalEquipmentRentedByMember(s, conn);
+                    break;
+                case 2:
+                    getPopularItem(conn);
+                    break;
+                case 3:
+                    getPopularManufacturer(conn);
+                    break;
+                case 4:
+                    getPopularDrone(conn);
+                    break;
+                case 5:
+                    getMemberWithMostItems(conn);
+                    break;
+                default:
+                    getEquipmentByTypeAndReleaseYear(s, conn);
+                    break;
+            }
+        }
+        //End Useful Reports
+
     public static void main(String[] args) {
         Connection conn = initializeDB(database);
         Scanner s = new Scanner(System.in);
@@ -738,8 +901,12 @@ public static void addMember(Connection conn, Scanner s) {
                 addRecord(conn, s);
             } else if (selection == 2) {
                 editRemoveRecord(s);
-            } else {
+            } else if (selection == 3) {
                 searchRecord(s, conn);
+            }
+            else
+            {
+                usefulQueries(s, conn);
             }
             selection = displayOptions(s);
         }
