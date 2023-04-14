@@ -326,6 +326,8 @@ public static void addMember(Connection conn, Scanner s) {
         System.out.println("\n---------------------------------------------------------------------------------------\n");
         System.out.println("Here are the current members in our system\n");
 
+        sqlQuery(conn, "SELECT * FROM MEMBER");
+
         System.out.println("");
         System.out.print("Enter the user_id of the member that you wish to edit or remove: ");
         if (s.hasNextLine()) {
@@ -338,7 +340,7 @@ public static void addMember(Connection conn, Scanner s) {
             if (editMember(s, conn, id)) {
                 System.out.println("Successfully edited member at " + id);
             } else {
-                System.out.println("Could not edit member at " + id);
+                System.out.println("Could not edit member that does not exist or a mistake was made.");
             }
 
         }
@@ -491,9 +493,9 @@ public static void addMember(Connection conn, Scanner s) {
                 return id;
             }
             if (editEquipment(s, conn, id)) {
-                System.out.println("Successfully edited member at " + id);
+                System.out.println("Successfully edited equipment with id " + id);
             } else {
-                System.out.println("Could not edit member at " + id);
+                System.out.println("Could not edit equipment with id " + id);
             }
 
         }
